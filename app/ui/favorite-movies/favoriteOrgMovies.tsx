@@ -1,22 +1,29 @@
-import { fetchFavoritePersonalMovies } from "@/lib/data";
+import { fetchFavoriteOrgMovies } from "@/lib/data";
 import FormButtonAbstraction from "../miscelaneous/formButtonAbstraction";
 import { deleteFavoriteMovie } from "@/lib/actions";
 
-export default async function FavoritePersonalMovies(){
-    const favPersonalMovies = await fetchFavoritePersonalMovies();
+type FavOrgMovies = FavOrgMovie[];
+
+interface FavOrgMovie{
+    movieName: string;
+    movieId: string;
+};
+
+export default async function FavoriteOrgMovies(){
+    const favOrgMovies: FavOrgMovies = await fetchFavoriteOrgMovies();
 
     return(
         <div className="w-full h-full flex flex-col p-5 rounded-sm bg-white border border-neutral-800 shadow-sm overflow-y-auto">
             <h2 className="text-2xl font-bold text-neutral-800">
-            Favorite personal movies
+            Favorite organization movies
             </h2>
             <p className="text-neutral-800 mb-4">
             Fetches the favorite movies that were uploaded using the form.
             </p>
             <div className="flex flex-row gap-4 flex-wrap">
             {
-                favPersonalMovies !== null && favPersonalMovies.length !== 0 ? (
-                    favPersonalMovies.map((movie, index) => {
+                favOrgMovies !== null && favOrgMovies.length !== 0 ? (
+                    favOrgMovies.map((movie, index) => {
                         return (
                             <div key={movie.movieName + index} className="group w-fit h-fit px-4 py-2 flex flex-row items-center justify-between gap-2 bg-neutral-100 rounded-md shadow-sm border border-neutral-800 cursor-default hover:outline hover:outline-neutral-300">
                                 <span className="text-sm font-semibold text-neutral-800">

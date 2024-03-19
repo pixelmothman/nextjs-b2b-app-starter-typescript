@@ -2,7 +2,14 @@
 
 import { useFormStatus } from 'react-dom'
 
-export default function FormButtonAbstraction({loadingText, buttonText, buttonIcon, background = true }){
+interface FormButtonAbstractionProps {
+    loadingText: string;
+    buttonText?: string;
+    buttonIcon?: string;
+    background?: boolean;
+}
+
+export default function FormButtonAbstraction({loadingText, buttonText, buttonIcon, background = true }: FormButtonAbstractionProps){
     const { pending } = useFormStatus();
 
     const buttonIcons = {

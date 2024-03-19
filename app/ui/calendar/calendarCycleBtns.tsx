@@ -12,16 +12,16 @@ export default function CalendarCycleBtns({}){
     // Get a new searchParams string by merging the current
     // searchParams with a provided key/value pair
     const createQueryString = useCallback((paramsObj) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParams?.toString());
         for (const [name, value] of Object.entries(paramsObj)) {
-            params.set(name, value);
+            params.set(name, value as string);
         }
         return params.toString();
     }, [searchParams]);
 
-    const currentYear = searchParams.get("year");
-    const currentMonth = searchParams.get("month");
-    const currentDay = searchParams.get("day");
+    const currentYear = searchParams?.get("year");
+    const currentMonth = searchParams?.get("month");
+    const currentDay = searchParams?.get("day");
 
 
     return (

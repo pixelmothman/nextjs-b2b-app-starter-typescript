@@ -160,7 +160,6 @@ export default function CalendarEventPopover( { event, dayName, dayNumber }){
                                         readOnly={readOnlyState}
                                         type='text' 
                                         value={readOnlyState === true ? event.cal_event_name : eventName} 
-                                        autoComplete='off' 
                                         id='calendar-event-name' 
                                         name='calendar-event-name' 
                                         onChange={(e) => {
@@ -176,7 +175,6 @@ export default function CalendarEventPopover( { event, dayName, dayNumber }){
                                         readOnly={readOnlyState}
                                         type='text' 
                                         value={readOnlyState === true ? event.cal_event_description : eventDescription} 
-                                        autoComplete='off' 
                                         id='calendar-event-description' 
                                         name='calendar-event-description' 
                                         onChange={(e) => {
