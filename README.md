@@ -1,13 +1,14 @@
 
 ![Image of login page of nextjs-b2b-app-starter](public/login-pixelmothman-nextjs-b2b-app-starter.png)
 
-# ⚡️ pixelmothman/nextjs-b2b-app-starter
+# ⚡️ pixelmothman/nextjs-b2b-app-starter-typescript
 
-This template provides a starting point for building B2B web applications using Next.js, Supabase for database and storage, PropelAuth for authentication, Zod for schema validation, TailwindCSS for styling, Radix-ui for some UI components, React Hot Toast for smoking hot React notifications, and React Dropzone for a simple React hook to create a HTML5-compliant drag'n'drop zone for files.
+This template provides a starting point for building B2B web applications using Next.js, Typescript, Supabase for database and storage, PropelAuth for authentication, Zod for schema validation, TailwindCSS for styling, Radix-ui for some UI components, React Hot Toast for smoking hot React notifications, and React Dropzone for a simple React hook to create a HTML5-compliant drag'n'drop zone for files.
 
 ## Powered by
 
 - ◽️ **Next.js**: a React framework for building full-stack web applications.
+- 🪖 **Typescript**: javascript with syntax for types.
 - 💾 **Supabase**: an open source platform that allows users to build production-grade applications with a Postgres database, Authentication, instant APIs, Realtime, Functions, Storage, and Vector embeddings.
 - 🟢 **PropelAuth**: provides end-to-end managed user authentication specializing in B2B use cases.
 - ✨ **Zod**: TypeScript-first schema validation with static type inference.
