@@ -4,8 +4,15 @@ import CalendarMonthAndYear from "@/app/ui/calendar/calendarMonthAndYear";
 import CalendarTable from "@/app/ui/calendar/calendarTable";
 import { Suspense } from "react";
 
+interface SearchParams {
+    searchParams: {
+        day: string;
+        month: string;
+        year: string
+    }
+}
 
-export default async function Calendar({searchParams}){
+export default async function Calendar({searchParams}: SearchParams){
 
     //query the url for the month and year
     //if nothing is found, use current month and year
@@ -21,7 +28,7 @@ export default async function Calendar({searchParams}){
                     <CalendarMonthAndYear/>
                 </Suspense>
                 <div className="w-fit flex flex-row gap-2">
-                    <CalendarAddEventPopover searchParams={searchParams}/>
+                    <CalendarAddEventPopover/>
                     <Suspense fallback={<div>Loading...</div>}>
                         <CalendarCycleBtns/>
                     </Suspense>

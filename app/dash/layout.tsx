@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { getUserOrRedirect } from "@propelauth/nextjs/server/app-router";
 import Link from "next/link";
 import MainMenuDropDown from "../ui/menus/mainMenuDropDown";
@@ -5,7 +6,9 @@ import LeftSideBar from "../ui/menus/leftSideBar";
 import DeleteOrgAlert from "../ui/delete-org/deleteOrgAlert";
 import { getIsOrgInDeleteQueue } from "@/lib/data";
 
-export default async function DashLayout( { children }) {
+export default async function DashLayout( { children }: {
+    children: ReactNode
+}) {
     const user = await getUserOrRedirect();
     const isOrgInDeleteQueue = await getIsOrgInDeleteQueue();
 

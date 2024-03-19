@@ -2,7 +2,7 @@ import Image from 'next/image'
 import loginImage from '@/public/login_illustration.png'
 import SignupAndLoginButtons from './ui/login/logInBtns'
 
-export default async function Home() {
+export default function Home() {
     
   return (
     <div className="w-full h-full flex flex-row">

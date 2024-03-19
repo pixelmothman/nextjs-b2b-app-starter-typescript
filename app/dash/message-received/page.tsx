@@ -1,7 +1,9 @@
-export default async function MessageReceived({ searchParams }){
-
+export default async function MessageReceived({ searchParams }: {
+    searchParams: {
+        message: string
+    }
+}){
     let messageArray = searchParams.message.split("_");
-
     let message = `Hello ${messageArray[0]}. You are ${messageArray[1]} years old, and your favorite movie genre is ${messageArray[2]}.`;
 
     return (
