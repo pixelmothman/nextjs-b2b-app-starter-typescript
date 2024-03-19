@@ -17,7 +17,7 @@ const FavMovieDataSchema = z.object({
     movieViewCategory: z.enum(['personal','org']),
 });
 
-export async function uploadFavMovie(formData){
+export async function uploadFavMovie(formData: FormData): Promise<void>{
 
     //check the user exists
     const user = await getUser();
@@ -52,7 +52,7 @@ const DeleteFavMovieDataSchema = z.object({
     movieId: z.string().uuid(),
 });
 
-export async function deleteFavoriteMovie(formData){
+export async function deleteFavoriteMovie(formData: FormData): Promise<void>{
     //check the user exists
     const user = await getUser();
 
@@ -87,7 +87,7 @@ const ExampleDataSchema = z.object({
     favoriteMovieGenre: z.enum(['horror','sci-fi','romantic comedies', 'action']),
 });
 
-export async function createExampleMessage(formData){
+export async function createExampleMessage(formData: FormData): Promise<void>{
 
     //check the user exists
     const user = await getUser();
@@ -108,7 +108,7 @@ export async function createExampleMessage(formData){
     let messageReceived = await processData(username, age, favoriteMovieGenre);
 
     //in this case we will return the message received
-    let newURL = `/dash/message-received?message=${messageReceived}`;
+    let newURL: string = `/dash/message-received?message=${messageReceived}`;
     
     redirect(newURL);
 };
@@ -122,7 +122,7 @@ export async function createExampleMessage(formData){
 
 // server action for adding an organization to the delete queue
 
-export async function addOrgToDeleteQueue(){
+export async function addOrgToDeleteQueue(): Promise<void>{
 
     //check the user exists
     const user = await getUser();
@@ -131,30 +131,33 @@ export async function addOrgToDeleteQueue(){
         throw new Error('User not found');
     };
 
-    //get the org_id 
+    //get the org_id and check the role of the user
     let org = user.orgIdToOrgMemberInfo;
-
-    let orgID = Object.keys(org)[0];
-
-    //check the role of the user is equal to Owner
-    let isOwnerRole = user.orgIdToOrgMemberInfo[orgID].isRole("Owner");
-
-    if(!isOwnerRole){
-        throw new Error('User is not an Owner');
+    let orgID: any;
+    let isOwnerRole: boolean;
+    if(org) {
+        orgID = Object.keys(org)[0];
+        //check the role of the user is equal to Owner
+        isOwnerRole = org[orgID].isRole("Owner");
+        if(isOwnerRole === false || isOwnerRole === undefined || isOwnerRole === null){
+            throw new Error('User is not an Owner');
+        };
+    } else {
+        throw new Error('Organization not found');
     }
 
     //add the org to the delete queue
     await addOrgToDBDeleteQueue(orgID);
 
     //redirect to menu
-    let newURL = `/dash`;
+    let newURL: string = `/dash`;
     
     redirect(newURL);
 };
 
 // server action for deleting an organization from the delete queue
 
-export async function delOrgFromDeleteQueue(){
+export async function delOrgFromDeleteQueue(): Promise<void>{
 
     //check the user exists
     const user = await getUser();
@@ -163,23 +166,26 @@ export async function delOrgFromDeleteQueue(){
         throw new Error('User not found');
     };
 
-    //get the org_id 
+    //get the org_id and check the role of the user
     let org = user.orgIdToOrgMemberInfo;
-
-    let orgID = Object.keys(org)[0];
-
-    //check the role of the user is equal to Owner
-    let isOwnerRole = user.orgIdToOrgMemberInfo[orgID].isRole("Owner");
-
-    if(!isOwnerRole){
-        throw new Error('User is not an Owner');
-    }
+    let orgID: any;
+    let isOwnerRole: boolean;
+    if(org) {
+        orgID = Object.keys(org)[0];
+        //check the role of the user is equal to Owner
+        isOwnerRole = org[orgID].isRole("Owner");
+        if(isOwnerRole === false || isOwnerRole === undefined || isOwnerRole === null){
+            throw new Error('User is not an Owner');
+        };
+    } else {
+        throw new Error('Organization not found');
+    };
 
     //add the org to the delete queue
     await deleteOrgFromDeleteQueue(orgID);
 
     //redirect to menu
-    let newURL = `/dash`;
+    let newURL: string = `/dash`;
     
     redirect(newURL);
 };
@@ -193,11 +199,18 @@ export async function delOrgFromDeleteQueue(){
 
 // server action for getting a signed upload URL
 
+interface ReturnUploadURL {
+    success?: boolean;
+    message?: string;
+    p?: string; 
+    t?: string;
+};
+
 const SingedUploadURLSchema = z.object({
     imageType: z.enum(['png','jpg','jpeg']),
 });
 
-export async function getUploadURL(prevState, formData){
+export async function getUploadURL(prevState: any, formData: FormData): Promise<ReturnUploadURL>{
     //check the user exists
     const user = await getUser();
 
@@ -213,10 +226,20 @@ export async function getUploadURL(prevState, formData){
 
     //console.log(imageType);
 
-    //get the org_id 
+    //get the org_id and check the role of the user
     let org = user.orgIdToOrgMemberInfo;
-
-    let orgID = Object.keys(org)[0];
+    let orgID: any;
+    let isOwnerRole: boolean;
+    if(org) {
+        orgID = Object.keys(org)[0];
+        //check the role of the user is equal to Owner
+        isOwnerRole = org[orgID].isRole("Owner");
+        if(isOwnerRole === false || isOwnerRole === undefined || isOwnerRole === null){
+            throw new Error('User is not an Owner');
+        };
+    } else {
+        throw new Error('Organization not found');
+    };
 
     //get signed url
     let signedUploadURL = await getSignedUploadURL(orgID, imageType);
@@ -233,12 +256,19 @@ export async function getUploadURL(prevState, formData){
 
 // server action for getting multiple signed upload urls
 
+interface ReturnUploadURLS {
+    success: boolean;
+    signedUploadURLOne?: {p: string; t: string;};
+    signedUploadURLTwo?: {p: string; t: string;};
+    message?: string;
+};
+
 const SingedUploadURLsSchema = z.object({
     imageTypeOne: z.enum(['png','jpg','jpeg']),
     imageTypeTwo: z.enum(['png','jpg','jpeg']),
 });
 
-export async function getUploadURLS(prevState, formData){
+export async function getUploadURLS(prevState: any, formData: FormData): Promise<ReturnUploadURLS>{
     //check the user exists
     const user = await getUser();
 
@@ -255,10 +285,20 @@ export async function getUploadURLS(prevState, formData){
 
     //console.log(imageType);
 
-    //get the org_id 
+    //get the org_id and check the role of the user
     let org = user.orgIdToOrgMemberInfo;
-
-    let orgID = Object.keys(org)[0];
+    let orgID: any;
+    let isOwnerRole: boolean;
+    if(org) {
+        orgID = Object.keys(org)[0];
+        //check the role of the user is equal to Owner
+        isOwnerRole = org[orgID].isRole("Owner");
+        if(isOwnerRole === false || isOwnerRole === undefined || isOwnerRole === null){
+            throw new Error('User is not an Owner');
+        };
+    } else {
+        throw new Error('Organization not found');
+    };
 
     //get signed url
     let signedUploadURLOne = await getSignedUploadURL(orgID, imageTypeOne);
@@ -287,11 +327,17 @@ export async function getUploadURLS(prevState, formData){
 
 // server action for getting signed urls
 
+interface ReturnSignedURLS {
+    success: boolean;
+    signedURLS?: string[];
+    message?: string;
+};
+
 const offsetSchema = z.object({
     offSetNumber: z.string(),
 });
 
-export async function getSingedURLS(prevState, formData){
+export async function getSingedURLS(prevState: any, formData: FormData): Promise<ReturnSignedURLS>{
     //check the user exists
     const user = await getUser();
 
@@ -305,14 +351,24 @@ export async function getSingedURLS(prevState, formData){
         offSetNumber: formData.get('off-img-number'),
     });
 
-    if(Number(offSetNumber) === NaN || Number(offSetNumber) === undefined || Number(offSetNumber) === null){
+    if(isNaN(Number(offSetNumber))|| Number(offSetNumber) === undefined || Number(offSetNumber) === null){
         throw new Error('Not a number');
     }
 
-    //get the org_id 
+    //get the org_id and check the role of the user
     let org = user.orgIdToOrgMemberInfo;
-
-    let orgID = Object.keys(org)[0];
+    let orgID: any;
+    let isOwnerRole: boolean;
+    if(org) {
+        orgID = Object.keys(org)[0];
+        //check the role of the user is equal to Owner
+        isOwnerRole = org[orgID].isRole("Owner");
+        if(isOwnerRole === false || isOwnerRole === undefined || isOwnerRole === null){
+            throw new Error('User is not an Owner');
+        };
+    } else {
+        throw new Error('Organization not found');
+    };
 
     //get the supabase client
     const supabase = await getSupabaseClient();
@@ -329,7 +385,7 @@ export async function getSingedURLS(prevState, formData){
         throw new Error('Failed to get list of images');
     }
 
-    if(offSetNumber > listOfImgs.length){
+    if(Number(offSetNumber) > listOfImgs.length){
         throw new Error('Offset number is greater than the number of images');
     }
 
@@ -367,7 +423,7 @@ const CalendarEventSchema = z.object({
     calendarEventEndDate: z.string().length(16),
 });
 
-export async function uploadCalendarEvent(formData){
+export async function uploadCalendarEvent(formData: FormData): Promise<void>{
 
     //check the user exists
     const user = await getUser();
@@ -392,8 +448,8 @@ export async function uploadCalendarEvent(formData){
     }
 
     //verify calEventStartDate is before calEventEndDate
-    let startDateTime = new Date(calendarEventStartDate);
-    let endDateTime = new Date(calendarEventEndDate);
+    let startDateTime: Date = new Date(calendarEventStartDate);
+    let endDateTime: Date = new Date(calendarEventEndDate);
 
     if(startDateTime.getTime() > endDateTime.getTime()){
         throw new Error('Event start must be before event end');
@@ -418,7 +474,7 @@ const CalendarEventUpdateSchema = z.object({
 
 // server action for updating a calendar event
 
-export async function updateCalendarEvent(formData){
+export async function updateCalendarEvent(formData: FormData): Promise<void>{
 
     //check the user exists
     const user = await getUser();
@@ -445,8 +501,8 @@ export async function updateCalendarEvent(formData){
     }
 
     //verify calEventStartDate is before calEventEndDate
-    let startDateTime = new Date(calendarEventStartDate);
-    let endDateTime = new Date(calendarEventEndDate);
+    let startDateTime: Date = new Date(calendarEventStartDate);
+    let endDateTime: Date = new Date(calendarEventEndDate);
 
     if(startDateTime.getTime() > endDateTime.getTime()){
         throw new Error('Event start must be before event end');
@@ -473,7 +529,7 @@ const CalendarEventDeleteSchema = z.object({
 
 // server action for deleting a calendar event
 
-export async function deleteCalendarEvent(formData){
+export async function deleteCalendarEvent(formData: FormData): Promise<void>{
     //check the user exists
     const user = await getUser();
 

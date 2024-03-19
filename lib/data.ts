@@ -16,8 +16,8 @@ export async function fetchFavoritePersonalMovies(){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
-        }
+            throw new Error('User not found');
+        };
 
         //get the supabase client
         const supabase = await getSupabaseClient();
@@ -26,18 +26,24 @@ export async function fetchFavoritePersonalMovies(){
         const { data: favPersonalMoviesData, error: favPersonalMoviesError } = await supabase.from("fav_movies_table").select('movie_id, movie_name').eq("movie_view_category", "personal").eq("user_id", user.userId);
 
         //create an array with the favorite movies
-        let movieArray = [];
-        for (let i = 0; i < favPersonalMoviesData.length; i++) {
-            movieArray.push({
-                movieId: favPersonalMoviesData[i].movie_id,
-                movieName: favPersonalMoviesData[i].movie_name
-            });
-        }
+        let movieArray: {
+            movieId: string;
+            movieName: string;
+        }[] = [];
+        
+        if(favPersonalMoviesData){
+            for (let i = 0; i < favPersonalMoviesData.length; i++) {
+                movieArray.push({
+                    movieId: favPersonalMoviesData[i].movie_id,
+                    movieName: favPersonalMoviesData[i].movie_name
+                });
+            };
+        };
 
         return movieArray;
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch favorite movies')
+        throw new Error('Failed to fetch favorite movies');
     };
 };
 //---------------------------------------------------------------------
@@ -55,33 +61,41 @@ export async function fetchFavoriteOrgMovies(){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
-        }
+            throw new Error('User not found');
+        };
 
         //get the supabase client
         const supabase = await getSupabaseClient();
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //get the favorite movies from the database
         const { data: favOrgMoviesData, error: favOrgMoviesError } = await supabase.from("fav_movies_table").select('movie_id, movie_name').eq("movie_view_category", "org").eq("user_id", user.userId).eq("org_id", orgID);
 
         //create an array with the favorite movies
-        let movieArray = [];
-        for (let i = 0; i < favOrgMoviesData.length; i++) {
-            movieArray.push({
-                movieId: favOrgMoviesData[i].movie_id,
-                movieName: favOrgMoviesData[i].movie_name
-            });
-        }
+        let movieArray: {
+            movieId: string;
+            movieName: string;
+        }[] = [];
+        
+        if(favOrgMoviesData){
+            for (let i = 0; i < favOrgMoviesData.length; i++) {
+                movieArray.push({
+                    movieId: favOrgMoviesData[i].movie_id,
+                    movieName: favOrgMoviesData[i].movie_name
+                });
+            };
+        };
 
         return movieArray;
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch favorite movies')
+        throw new Error('Failed to fetch favorite movies');
     };
 };
 //---------------------------------------------------------------------
@@ -99,16 +113,18 @@ export async function uploadFavoriteMovie(movieName, movieViewCategory){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
-        }
+            throw new Error('User not found');
+        };
 
         //get the supabase client
         const supabase = await getSupabaseClient();
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //insert the movie name into the database
         const { error } = await supabase.from("fav_movies_table").insert({org_id: orgID, user_id: user.userId, movie_name: movieName, movie_view_category: movieViewCategory});
@@ -116,7 +132,7 @@ export async function uploadFavoriteMovie(movieName, movieViewCategory){
         return;
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch upload data')
+        throw new Error('Failed to fetch upload data');
     };
 };
 //---------------------------------------------------------------------
@@ -134,19 +150,19 @@ export async function deleteFavMovie(movieID){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
-        }
+            throw new Error('User not found');
+        };
 
          //get the supabase client
          const supabase = await getSupabaseClient();
 
         //delete the favorite movie from the database
-        const { deleteFavMovieError: error } = await supabase.from("fav_movies_table").delete().eq("movie_id", movieID).eq("user_id", user.userId);
+        const { error: deleteFavMovieError } = await supabase.from("fav_movies_table").delete().eq("movie_id", movieID).eq("user_id", user.userId);
         
         return;
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch upload data')
+        throw new Error('Failed to fetch upload data');
     };
 };
 //---------------------------------------------------------------------
@@ -164,8 +180,8 @@ export async function processData(username, age, favoriteMovieGenre){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
-        }
+            throw new Error('User not found');
+        };
 
         //example (returning something random)
         let message = `${username}_${age}_${favoriteMovieGenre}`;
@@ -173,7 +189,7 @@ export async function processData(username, age, favoriteMovieGenre){
         return message;
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch upload data')
+        throw new Error('Failed to fetch upload data');
     };
 };
 //---------------------------------------------------------------------
@@ -191,7 +207,7 @@ export async function addOrgToDBDeleteQueue(orgID){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
+            throw new Error('User not found');
         };
 
         //get the supabase client
@@ -203,7 +219,7 @@ export async function addOrgToDBDeleteQueue(orgID){
         return;
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch upload data')
+        throw new Error('Failed to fetch upload data');
     };
 };
 //---------------------------------------------------------------------
@@ -212,7 +228,12 @@ export async function addOrgToDBDeleteQueue(orgID){
 
 //---------------------------------------------------------------------
 // server-side function to fetch if the org is in the delete queue
-export async function getIsOrgInDeleteQueue(){
+interface IsOrgInDeleteQueue {
+    isOrgInDeleteQueue: boolean;
+    userWhoTriggeredOrgDeleteEmail?: string;
+};
+
+export async function getIsOrgInDeleteQueue(): Promise<IsOrgInDeleteQueue>{
     //prevents the response from being cached
     noStore();
     try {
@@ -221,7 +242,7 @@ export async function getIsOrgInDeleteQueue(){
         const user = await getUser();
 
         if(!user){
-            return new Error('User not found')
+            throw new Error('User not found');
         };
 
         //get the Supabase client
@@ -229,30 +250,46 @@ export async function getIsOrgInDeleteQueue(){
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //fetch the org in the org_to_delete_table table
         const {data: orgInDeleteQueue, error: orgInDeleteQueueError} = await supabase.from("org_to_delete_table").select('org_id, user_id').eq('org_id', orgID);
 
         //if the org is in the table, it is in the delete queue
-        if(orgInDeleteQueue.length === 0) {
+        if(orgInDeleteQueue && orgInDeleteQueue.length === 0) {
             return {
                 isOrgInDeleteQueue: false
-            }
-        } else {
-            //fetch email of user who added the org to the delete queue
-            const {data: userWhoTriggeredOrgDelete, error: userWhoTriggeredOrgDeleteError} = await supabase.from("user_table").select('user_email').eq('user_id', orgInDeleteQueue[0].user_id);
+            };
+        } 
 
+        //if orgInDeleteQueue is null, return false
+        if(!orgInDeleteQueue || !orgInDeleteQueue[0].user_id){
             return {
-                isOrgInDeleteQueue: true,
-                userWhoTriggeredOrgDeleteEmail: userWhoTriggeredOrgDelete[0].user_email
-            }
+                isOrgInDeleteQueue: false
+            };
+        };
+
+        //fetch email of user who added the org to the delete queue
+        const {data: userWhoTriggeredOrgDelete, error: userWhoTriggeredOrgDeleteError} = await supabase.from("user_table").select('user_email').eq('user_id', orgInDeleteQueue[0].user_id);
+
+        //if userWhoTriggeredOrgDelete is null, return false
+        if(!userWhoTriggeredOrgDelete){
+            return {
+                isOrgInDeleteQueue: false
+            };
+        };
+
+        return {
+            isOrgInDeleteQueue: true,
+            userWhoTriggeredOrgDeleteEmail: userWhoTriggeredOrgDelete[0].user_email
         };
 
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch the org to be deleted in queue')
+        throw new Error('Failed to fetch the org to be deleted in queue');
     };
 };
 //---------------------------------------------------------------------
@@ -261,7 +298,7 @@ export async function getIsOrgInDeleteQueue(){
 
 //---------------------------------------------------------------------
 // server-side function to delete the org from the delete queue
-export async function deleteOrgFromDeleteQueue(orgID){
+export async function deleteOrgFromDeleteQueue(orgID: string){
     //prevents the response from being cached
     noStore();
     try {
@@ -270,20 +307,20 @@ export async function deleteOrgFromDeleteQueue(orgID){
         const user = await getUser();
 
         if(!user){
-            return new Error('User not found')
+            return new Error('User not found');
         };
 
         //get the Supabase client
         const supabase = await getSupabaseClient();
 
         //fetch the org in the org_to_delete_table table
-        const {error: deleteOrgInDeleteQueueError} = await supabase.from("org_to_delete_table").delete('org_id').eq('org_id', orgID);
+        const {error: deleteOrgInDeleteQueueError} = await supabase.from("org_to_delete_table").delete().eq('org_id', orgID);
 
         return;
 
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch the org to be deleted in queue')
+        throw new Error('Failed to fetch the org to be deleted in queue');
     };
 };
 //---------------------------------------------------------------------
@@ -292,7 +329,7 @@ export async function deleteOrgFromDeleteQueue(orgID){
 
 //---------------------------------------------------------------------
 // server-side function to create a singed url for an image upload
-export async function getSignedUploadURL(orgID, imageType){
+export async function getSignedUploadURL(orgID: string, imageType: string){
     //prevents the response from being cached
     noStore();
     try {
@@ -301,7 +338,7 @@ export async function getSignedUploadURL(orgID, imageType){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
+            throw new Error('User not found');
         };
 
         //get the supabase client
@@ -309,19 +346,20 @@ export async function getSignedUploadURL(orgID, imageType){
 
         //get the signed url
         //use the uuid to make the image name unique
-        let imageName = uuidv4();
+        let imageName: string = uuidv4();
         const { data: theSignedUploadURL, error } = await supabase.storage.from('images').createSignedUploadUrl(`${orgID}/${imageName}.${imageType}`);
         
-        //return the signed url
-        let signedUploadURL = {
-            p: theSignedUploadURL.path,
-            t: theSignedUploadURL.token
-        }
-
-        return signedUploadURL;
+        if(theSignedUploadURL){
+            //return the signed url
+            let signedUploadURL = {
+                p: theSignedUploadURL.path,
+                t: theSignedUploadURL.token
+            }
+            return signedUploadURL;
+        };
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch upload data')
+        throw new Error('Failed to fetch upload data');
     };
 }
 //---------------------------------------------------------------------
@@ -339,13 +377,15 @@ export async function fetchImgsFromOrg(){
         const user = await getUser();
 
         if (!user) {
-            throw new Error('User not found')
-        }
+            throw new Error('User not found');
+        };
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //get the supabase client
         const supabase = await getSupabaseClient();
@@ -358,45 +398,53 @@ export async function fetchImgsFromOrg(){
             offset: 0,
         })
 
-        if(listOfImgs.length === 0){
-            let imagesData = {
+        if(!listOfImgs || listOfImgs.length === 0){
+            let imagesData: {counterOfFiles: number; listSignedURLS: string[]}  = {
                 counterOfFiles: 0,
                 listSignedURLS: []
-            }
+            };
+            return imagesData;
+        };
 
-            return imagesData
-        } else {
-            let counterOfFiles = listOfImgs.length;
-            let arrayOfPaths = [];
-            for (let i = 0; i < 4; i++) {
-                if(listOfImgs[i] === undefined){
-                    break;
-                }
-                arrayOfPaths.push(`${orgID}/${listOfImgs[i].name}`);
-            }
+        let counterOfFiles: number = listOfImgs.length;
+        let arrayOfPaths: string[] = [];
+        for (let i = 0; i < 4; i++) {
+            if(listOfImgs[i] === undefined){
+                break;
+            };
+            arrayOfPaths.push(`${orgID}/${listOfImgs[i].name}`);
+        };
 
-            //get the singned urls of images from the org from the database
-            const { data: listOfSignedURLS, error: listOfSignedURLSError} = await supabase
-            .storage
-            .from('images')
-            .createSignedUrls( arrayOfPaths , 300)
+        //get the singned urls of images from the org from the database
+        const { data: listOfSignedURLS, error: listOfSignedURLSError} = await supabase
+        .storage
+        .from('images')
+        .createSignedUrls( arrayOfPaths , 300)
 
-            //filter to get only an array og the signedUrl keys
-            let listSignedURLS = [];
-            for (let i = 0; i < listOfSignedURLS.length; i++) {
-                listSignedURLS.push(listOfSignedURLS[i].signedUrl);
-            }
-
-            let imagesData = {
-                counterOfFiles,
-                listSignedURLS
-            }
-
+        if(!listOfSignedURLS || listOfSignedURLS.length === 0){
+            let imagesData: {counterOfFiles: number; listSignedURLS: string[]}  = {
+                counterOfFiles: 0,
+                listSignedURLS: []
+            };
             return imagesData;
         }
+        
+        //filter to get only an array og the signedUrl keys
+        let listSignedURLS: string[] = [];
+        for (let i = 0; i < listOfSignedURLS.length; i++) {
+            listSignedURLS.push(listOfSignedURLS[i].signedUrl);
+        };
+
+        let imagesData: {counterOfFiles: number; listSignedURLS: string[]}  = {
+            counterOfFiles,
+            listSignedURLS
+        };
+
+        return imagesData;
+        
     } catch (error) {
         console.error('DB Error: ', error);
-        throw new Error('Failed to fetch images data')
+        throw new Error('Failed to fetch images data');
     };
 };
 //---------------------------------------------------------------------
@@ -430,25 +478,28 @@ export async function getSignedURLsFromSupa(orgID, offSetNumber){
             sortBy: { column: 'name', order: 'asc' },
         })
 
-        let arrayOfPaths = [];
-        for (let i = 0; i < listOfImgs.length; i++) {
-            arrayOfPaths.push(`${orgID}/${listOfImgs[i].name}`);
-        }
+        if(listOfImgs){
+            let arrayOfPaths: string[] = [];
+            for (let i = 0; i < listOfImgs.length; i++) {
+                arrayOfPaths.push(`${orgID}/${listOfImgs[i].name}`);
+            }
 
-        //get the singned urls of images from the org from the database
-        const { data: listOfSignedURLS, error: listOfSignedURLSError} = await supabase
-        .storage
-        .from('images')
-        .createSignedUrls( arrayOfPaths , 300)
+            //get the singned urls of images from the org from the database
+            const { data: listOfSignedURLS, error: listOfSignedURLSError} = await supabase
+            .storage
+            .from('images')
+            .createSignedUrls( arrayOfPaths , 300)
 
-        //filter to get only an array og the signedUrl keys
-        let listSignedURLS = [];
-        for (let i = 0; i < listOfSignedURLS.length; i++) {
-            listSignedURLS.push(listOfSignedURLS[i].signedUrl);
-        }
+            if(listOfSignedURLS){
+                //filter to get only an array og the signedUrl keys
+                let listSignedURLS: string[] = [];
+                for (let i = 0; i < listOfSignedURLS.length; i++) {
+                    listSignedURLS.push(listOfSignedURLS[i].signedUrl);
+                }
 
-
-        return listSignedURLS;
+                return listSignedURLS;
+            };
+        };
     } catch (error) {
         console.error('DB Error: ', error);
         throw new Error('Failed to fetch images')
@@ -477,17 +528,19 @@ export async function fetchCalendarEvents(date){
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //get the first day of the month and delete eveything after T00:00:00.000Z
-        let startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-        startDate = startDate.toISOString().split('T')[0];
+        let startDate: Date = new Date(date.getFullYear(), date.getMonth(), 1);
+        let startDateString: string = startDate.toISOString().split('T')[0];
 
 
         //get the first day of the next month
-        let endDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-        endDate = endDate.toISOString().split('T')[0];
+        let endDate: Date = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+        let endDateString: string = endDate.toISOString().split('T')[0];
 
         //get the calendar events from the database that have the 'organization' label
         const { data: calOrgEvents, error: calOrgEventsError } = await supabase
@@ -495,8 +548,8 @@ export async function fetchCalendarEvents(date){
         .select("*")
         .eq('cal_event_label', 'organization')
         .eq("org_id", orgID)
-        .gte('cal_event_start_date', startDate)
-        .lt('cal_event_start_date', endDate)
+        .gte('cal_event_start_date', startDateString)
+        .lt('cal_event_start_date', endDateString)
 
         //get the calendar events from the database that have the 'personal' label
         const { data: calPersonalEvents, error: calPersonalEventsError } = await supabase
@@ -504,19 +557,33 @@ export async function fetchCalendarEvents(date){
         .select("*")
         .eq('cal_event_label', 'personal')
         .eq("user_id", user.userId)
-        .gte('cal_event_start_date', startDate)
-        .lt('cal_event_start_date', endDate)
-
+        .gte('cal_event_start_date', startDateString)
+        .lt('cal_event_start_date', endDateString)
 
         //create an array with the calendar events
-        let calEventsArray = [];
-        for (let i = 0; i < calOrgEvents.length; i++) {
-            calEventsArray.push(calOrgEvents[i]);
-        };
-        for (let i = 0; i < calPersonalEvents.length; i++) {
-            calEventsArray.push(calPersonalEvents[i]);
-        };
-        
+        let calEventsArray : {
+            cal_event_description: string;
+            cal_event_end_date: string;
+            cal_event_id: string;
+            cal_event_label: string;
+            cal_event_name: string;
+            cal_event_start_date: string;
+            created_at: string;
+            org_id: string;
+            user_id: string;
+        }[] = [];
+        if(calOrgEvents){
+            for (let i = 0; i < calOrgEvents.length; i++) {
+                calEventsArray.push(calOrgEvents[i]);
+            };
+        }
+
+        if(calPersonalEvents){
+            for (let i = 0; i < calPersonalEvents.length; i++) {
+                calEventsArray.push(calPersonalEvents[i]);
+            };
+        }
+
         return calEventsArray;
     } catch (error) {
         console.error('DB Error: ', error);
@@ -546,8 +613,10 @@ export async function uploadCalEvent(calEventLabel, calEventName, calEventDescri
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //upload the calendar event to the database
         const { error: calUploadEventError } = await supabase.from("calendar_events_table").insert({
@@ -596,8 +665,10 @@ export async function updateCalEvent(
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //delete the calendar event from the database with id calendarEventID
         const { error: calDeleteEventError } = await supabase.from("calendar_events_table").delete().eq("cal_event_id", calendarEventID).eq("org_id", orgID);
@@ -642,8 +713,10 @@ export async function deleteCalEvent(calendarEventID){
 
         //get the org_id 
         let org = user.orgIdToOrgMemberInfo;
-
-        let orgID = Object.keys(org)[0];
+        let orgID: any;
+        if(org) {
+            orgID = Object.keys(org)[0];
+        };
 
         //delete the calendar event from the database with id calendarEventID
         const { error: deleteCalEvent } = await supabase.from("calendar_events_table").delete().eq("cal_event_id", calendarEventID).eq("org_id", orgID);
