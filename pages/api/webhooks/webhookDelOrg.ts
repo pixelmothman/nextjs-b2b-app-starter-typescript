@@ -2,6 +2,8 @@ import { Webhook } from "svix";
 import { getSupabaseClient } from "@/lib/supabase";
 import { propelauth } from "@/lib/propelauth";
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { buffer } from "stream/consumers";
+
 
 export const config = {
     api: {
@@ -35,7 +37,7 @@ export default async function POST(request: NextApiRequest, response: NextApiRes
     }
 
     //read the request
-    const payload = request.body;
+    const payload = (await buffer(request)).toString();
     const headers: any = request.headers;
 
     //verify the webhook
