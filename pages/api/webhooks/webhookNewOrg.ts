@@ -1,6 +1,6 @@
 import { Webhook } from "svix";
-import { buffer } from "@/lib/buffer";
 import { getSupabaseClient } from "@/lib/supabase";
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 export const config = {
     api: {
@@ -10,25 +10,40 @@ export const config = {
 
 const secret = process.env.SVIX_WEBHOOK_NEW_ORG;
 
-export default async function handler(req, res) {
+type ResponseData = {
+    message?: string;
+    error?: string;
+};
+
+export default async function POST(request: NextApiRequest, response: NextApiResponse<ResponseData>) {
 
     console.log("Webhook received! Verifying...");
 
-    if(req.method !== "POST"){
-        res.status(405).json({
+    //check if the method is POST
+    if(request.method !== "POST"){
+        return response.status(405).json({
             error: "Method not allowed"
         });
     }
 
-    const payload = (await buffer(req)).toString();
-    const headers = req.headers;
+    //check if the secret is defined
+    if(typeof secret === "undefined"){
+        return response.status(500).json({
+            error: "Internal server error"
+        });
+    }
 
+    //read the request
+    const payload = request.body;
+    const headers: any = request.headers;
+
+    //verify the webhook
     const wh = new Webhook(secret);
-    let msg;
+    let msg: any;
     try {
         msg = wh.verify(payload, headers);
     } catch (err) {
-        res.status(400).json({});
+        response.status(400).json({});
     }
 
     console.log("Webhook verified! Starting to process...");
@@ -48,10 +63,10 @@ export default async function handler(req, res) {
     //check for errors
     if(error){
         console.log("Error inserting data into the database: ", error);
-        res.status(500).json({
+        return response.status(500).json({
             error: "Error inserting data into the database"
         });
     }
 
-    res.json({message: "Webhook processed successfully!"});
+    return response.json({message: "Webhook processed successfully!"});
 };
